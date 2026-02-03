@@ -1,0 +1,159 @@
+#!/bin/bash
+set -euo pipefail
+
+export DEBIAN_FRONTEND=noninteractive
+
+STATE_DIR="/var/lib/openclaw"
+mkdir -p "$STATE_DIR"
+
+log() {
+  echo "[openclaw-userdata] $1"
+}
+
+# Base system (safe to rerun)
+log "System update"
+apt-get update -y
+apt-get upgrade -y
+
+# Docker
+if ! command -v docker >/dev/null 2>&1; then
+  log "Installing Docker"
+  curl -fsSL https://get.docker.com | sh
+  systemctl enable docker
+  systemctl start docker
+  usermod -aG docker ubuntu
+else
+  log "Docker already installed"
+fi
+
+# NVM + Node + OpenClaw (ubuntu user)
+if [ ! -f "$STATE_DIR/node_installed" ]; then
+  log "Installing Node.js + OpenClaw"
+  sudo -u ubuntu bash <<'UBUNTU'
+set -e
+cd ~
+
+export NVM_DIR="$HOME/.nvm"
+
+if [ ! -d "$NVM_DIR" ]; then
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+fi
+
+. "$NVM_DIR/nvm.sh"
+
+if ! nvm ls 22 >/dev/null 2>&1; then
+  nvm install 22
+fi
+
+nvm use 22
+nvm alias default 22
+
+if ! command -v openclaw >/dev/null 2>&1; then
+  npm install -g openclaw@latest
+fi
+UBUNTU
+
+  touch "$STATE_DIR/node_installed"
+else
+  log "Node/OpenClaw already installed"
+fi
+
+# Environment variables
+if ! grep -q ANTHROPIC_API_KEY /home/ubuntu/.bashrc; then
+  echo 'export ANTHROPIC_API_KEY="${anthropic_api_key}"' >> /home/ubuntu/.bashrc
+fi
+
+# Tailscale
+if ! command -v tailscale >/dev/null 2>&1; then
+  log "Installing Tailscale"
+  curl -fsSL https://tailscale.com/install.sh | sh
+fi
+
+if ! tailscale status >/dev/null 2>&1; then
+  log "Bringing up Tailscale"
+  tailscale up --authkey="${tailscale_auth_key}" --ssh || true
+else
+  log "Tailscale already running"
+fi
+
+# User services support
+loginctl enable-linger ubuntu || true
+systemctl start user@1000.service || true
+
+# OpenClaw onboarding (ONE TIME)
+if [ ! -f "$STATE_DIR/onboarded" ]; then
+  log "Running OpenClaw onboarding"
+  sudo -H -u ubuntu ANTHROPIC_API_KEY="${anthropic_api_key}" GATEWAY_PORT="${gateway_port}" bash <<'ONBOARD'
+set -e
+export HOME=/home/ubuntu
+export NVM_DIR="$HOME/.nvm"
+. "$NVM_DIR/nvm.sh"
+
+openclaw onboard --non-interactive --accept-risk \
+  --mode local \
+  --auth-choice apiKey \
+  --gateway-port "$GATEWAY_PORT" \
+  --gateway-bind loopback \
+  --skip-daemon \
+  --skip-skills
+ONBOARD
+
+  touch "$STATE_DIR/onboarded"
+else
+  log "OpenClaw already onboarded"
+fi
+
+# OpenClaw daemon install (ONE TIME)
+if [ ! -f "$STATE_DIR/daemon_installed" ]; then
+  log "Installing OpenClaw daemon"
+  sudo -H -u ubuntu XDG_RUNTIME_DIR=/run/user/1000 bash <<'DAEMON'
+set -e
+export HOME=/home/ubuntu
+export NVM_DIR="$HOME/.nvm"
+. "$NVM_DIR/nvm.sh"
+
+openclaw daemon install
+DAEMON
+
+  touch "$STATE_DIR/daemon_installed"
+else
+  log "OpenClaw daemon already installed"
+fi
+
+# Gateway config patch (safe to rerun)
+CONFIG="/home/ubuntu/.openclaw/openclaw.json"
+
+if [ -f "$CONFIG" ]; then
+  log "Patching gateway configuration"
+  sudo -H -u ubuntu GATEWAY_TOKEN="${gateway_token}" python3 <<'PY'
+import json, os
+
+p = "/home/ubuntu/.openclaw/openclaw.json"
+with open(p) as f:
+    c = json.load(f)
+
+c.setdefault("gateway", {})
+c["gateway"]["trustedProxies"] = ["127.0.0.1"]
+c["gateway"]["controlUi"] = {
+    "enabled": True,
+    "allowInsecureAuth": True
+}
+c["gateway"]["auth"] = {
+    "mode": "token",
+    "token": os.environ["GATEWAY_TOKEN"]
+}
+
+with open(p, "w") as f:
+    json.dump(c, f, indent=2)
+PY
+fi
+
+# Tailscale serve (idempotent-ish)
+if ! tailscale serve status >/dev/null 2>&1; then
+  log "Enabling Tailscale serve"
+  tailscale serve --bg ${gateway_port} || true
+else
+  log "Tailscale serve already configured"
+fi
+
+log "OpenClaw user-data completed successfully"

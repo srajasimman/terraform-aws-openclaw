@@ -1,0 +1,22 @@
+# Example terraform.tfvars file
+# Copy this file to terraform.tfvars and fill in your actual values
+
+# AWS Configuration
+region        = "us-east-1"
+instance_type = "t3.medium"
+
+# Anthropic API Key
+# Get from: https://console.anthropic.com/
+anthropic_api_key = "sk-ant-api03-..."
+
+# Tailscale Configuration
+# Generate auth key from: https://login.tailscale.com/admin/settings/keys
+tailscale_auth_key = "tskey-auth-..."
+
+# Your Tailscale network DNS name
+# Find this in your Tailscale admin console
+tailnet_dns_name = "your-tailnet.ts.net"
+
+# Optional: Custom ports (defaults shown)
+# gateway_port = 18789
+# browser_port = 18791
