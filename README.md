@@ -55,27 +55,62 @@ module "openclaw" {
 See [examples/complete](./examples/complete) for a full working example.
 
 <!-- BEGIN_TF_DOCS -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.0 |
+| <a name="requirement_tls"></a> [tls](#requirement\_tls) | ~> 4.0 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 5.0 |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | ~> 4.0 |
+
+## Modules
+
+No modules.
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [aws_instance.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance) | resource |
+| [aws_internet_gateway.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/internet_gateway) | resource |
+| [aws_key_pair.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/key_pair) | resource |
+| [aws_route_table.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table) | resource |
+| [aws_route_table_association.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table_association) | resource |
+| [aws_security_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
+| [aws_subnet.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet) | resource |
+| [aws_vpc.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc) | resource |
+| [tls_private_key.gateway](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
+| [tls_private_key.ssh](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
+| [aws_ami.ubuntu](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
-| region | AWS region to deploy resources | `string` | `"us-east-1"` | no |
-| instance_type | EC2 instance type | `string` | `"t3.medium"` | no |
-| anthropic_api_key | Anthropic API key for OpenClaw | `string` | n/a | yes |
-| tailscale_auth_key | Tailscale authentication key | `string` | n/a | yes |
-| tailnet_dns_name | Tailscale network DNS name (e.g., your-tailnet.ts.net) | `string` | n/a | yes |
-| gateway_port | Port for OpenClaw gateway | `number` | `18789` | no |
-| browser_port | Port for browser access | `number` | `18791` | no |
+|------|-------------|------|---------|:--------:|
+| <a name="input_anthropic_api_key"></a> [anthropic\_api\_key](#input\_anthropic\_api\_key) | n/a | `string` | n/a | yes |
+| <a name="input_browser_port"></a> [browser\_port](#input\_browser\_port) | n/a | `number` | `18791` | no |
+| <a name="input_gateway_port"></a> [gateway\_port](#input\_gateway\_port) | n/a | `number` | `18789` | no |
+| <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | n/a | `string` | `"t3.medium"` | no |
+| <a name="input_region"></a> [region](#input\_region) | n/a | `string` | `"us-east-1"` | no |
+| <a name="input_tailnet_dns_name"></a> [tailnet\_dns\_name](#input\_tailnet\_dns\_name) | n/a | `string` | n/a | yes |
+| <a name="input_tailscale_auth_key"></a> [tailscale\_auth\_key](#input\_tailscale\_auth\_key) | n/a | `string` | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| public_ip | Public IP address of the EC2 instance |
-| public_dns | Public DNS name of the EC2 instance |
-| ssh_private_key | SSH private key (sensitive) |
-| gateway_token | Auto-generated gateway authentication token (sensitive) |
-| tailscale_url_with_token | Tailscale URL with embedded gateway token |
+| <a name="output_gateway_token"></a> [gateway\_token](#output\_gateway\_token) | n/a |
+| <a name="output_public_dns"></a> [public\_dns](#output\_public\_dns) | n/a |
+| <a name="output_public_ip"></a> [public\_ip](#output\_public\_ip) | n/a |
+| <a name="output_ssh_private_key"></a> [ssh\_private\_key](#output\_ssh\_private\_key) | n/a |
+| <a name="output_tailscale_url_with_token"></a> [tailscale\_url\_with\_token](#output\_tailscale\_url\_with\_token) | n/a |
 <!-- END_TF_DOCS -->
 
 ## Accessing OpenClaw
