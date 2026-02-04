@@ -4,7 +4,11 @@ This example demonstrates a complete deployment of OpenClaw on AWS EC2 with all 
 
 ## Prerequisites
 
-1. **Anthropic API Key**: Get from [Anthropic Console](https://console.anthropic.com/)
+1. **LLM Provider API Key** (choose one):
+   - **Anthropic**: Get from [Anthropic Console](https://console.anthropic.com/) (default)
+   - **OpenRouter**: Get from [OpenRouter](https://openrouter.ai/keys)
+   - **OpenAI**: Get from [OpenAI Platform](https://platform.openai.com/api-keys)
+   - **OpenCode Zen**: Get from your OpenCode Zen account
 2. **Tailscale Account**: Sign up at [Tailscale](https://tailscale.com/)
 3. **Tailscale Auth Key**: Generate from [Tailscale Admin](https://login.tailscale.com/admin/settings/keys)
    - Recommended: Create a reusable key with appropriate expiration
@@ -54,7 +58,16 @@ This example demonstrates a complete deployment of OpenClaw on AWS EC2 with all 
 All required variables must be set in `terraform.tfvars`:
 
 ```hcl
-anthropic_api_key  = "sk-ant-api03-..."  # From Anthropic Console
+# LLM Provider - choose one of: anthropic, openrouter, openai, opencode-zen
+llm_provider = "anthropic"  # Default
+
+# API Key for your chosen provider (only one required)
+anthropic_api_key  = "sk-ant-api03-..."  # If using Anthropic
+# openrouter_api_key = "sk-or-v1-..."    # If using OpenRouter
+# openai_api_key     = "sk-..."          # If using OpenAI
+# opencode_zen_api_key = "sk-..."        # If using OpenCode Zen
+
+# Tailscale configuration (always required)
 tailscale_auth_key = "tskey-auth-..."     # From Tailscale Admin
 tailnet_dns_name   = "your-tailnet.ts.net" # Your Tailscale network
 ```
@@ -142,6 +155,14 @@ This example provides helpful outputs:
 | `instructions` | Post-deployment guide |
 
 ## Customization Examples
+
+### Use Different LLM Provider
+
+```hcl
+# terraform.tfvars
+llm_provider       = "openai"
+openai_api_key     = "sk-..."
+```
 
 ### Deploy in Different Region
 

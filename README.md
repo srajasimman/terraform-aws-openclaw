@@ -5,6 +5,7 @@ A Terraform module to deploy [OpenClaw](https://github.com/openclaw/openclaw) on
 ## Features
 
 - 🚀 Automated deployment of OpenClaw on Ubuntu 24.04 LTS
+- 🤖 **Multi-provider LLM support**: Anthropic, OpenRouter, OpenAI, and OpenCode Zen
 - 🔐 Tailscale integration for secure remote access
 - 🐳 Docker pre-installed for container-based skills
 - 🔑 Automatic SSH key pair generation
@@ -31,7 +32,11 @@ This module deploys:
 
 - Terraform >= 1.5
 - AWS credentials configured
-- [Anthropic API key](https://console.anthropic.com/)
+- **LLM Provider API Key** (choose one):
+  - [Anthropic API key](https://console.anthropic.com/) (default)
+  - [OpenRouter API key](https://openrouter.ai/keys)
+  - [OpenAI API key](https://platform.openai.com/api-keys)
+  - OpenCode Zen API key
 - [Tailscale account](https://tailscale.com/) and auth key
 
 ## Usage
@@ -44,9 +49,48 @@ module "openclaw" {
 
   region             = "us-east-1"
   instance_type      = "t3.medium"
+  
+  # LLM Provider (default: anthropic)
+  llm_provider       = "anthropic"
   anthropic_api_key  = var.anthropic_api_key
+  
   tailscale_auth_key = var.tailscale_auth_key
   tailnet_dns_name   = "your-tailnet.ts.net"
+}
+```
+
+### Using Different LLM Providers
+
+**OpenRouter:**
+```hcl
+module "openclaw" {
+  source = "github.com/srajasimman/terraform-aws-openclaw"
+
+  llm_provider       = "openrouter"
+  openrouter_api_key = var.openrouter_api_key
+  # ... other required variables
+}
+```
+
+**OpenAI:**
+```hcl
+module "openclaw" {
+  source = "github.com/srajasimman/terraform-aws-openclaw"
+
+  llm_provider    = "openai"
+  openai_api_key  = var.openai_api_key
+  # ... other required variables
+}
+```
+
+**OpenCode Zen:**
+```hcl
+module "openclaw" {
+  source = "github.com/srajasimman/terraform-aws-openclaw"
+
+  llm_provider         = "opencode-zen"
+  opencode_zen_api_key = var.opencode_zen_api_key
+  # ... other required variables
 }
 ```
 
@@ -94,10 +138,14 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_anthropic_api_key"></a> [anthropic\_api\_key](#input\_anthropic\_api\_key) | n/a | `string` | n/a | yes |
+| <a name="input_anthropic_api_key"></a> [anthropic\_api\_key](#input\_anthropic\_api\_key) | Anthropic API key (required when llm\_provider is 'anthropic') | `string` | `""` | no |
 | <a name="input_browser_port"></a> [browser\_port](#input\_browser\_port) | n/a | `number` | `18791` | no |
 | <a name="input_gateway_port"></a> [gateway\_port](#input\_gateway\_port) | n/a | `number` | `18789` | no |
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | n/a | `string` | `"t3.medium"` | no |
+| <a name="input_llm_provider"></a> [llm\_provider](#input\_llm\_provider) | LLM provider to use with OpenClaw (anthropic, openrouter, openai, or opencode-zen) | `string` | `"anthropic"` | no |
+| <a name="input_openai_api_key"></a> [openai\_api\_key](#input\_openai\_api\_key) | OpenAI API key (required when llm\_provider is 'openai') | `string` | `""` | no |
+| <a name="input_opencode_zen_api_key"></a> [opencode\_zen\_api\_key](#input\_opencode\_zen\_api\_key) | OpenCode Zen API key (required when llm\_provider is 'opencode-zen') | `string` | `""` | no |
+| <a name="input_openrouter_api_key"></a> [openrouter\_api\_key](#input\_openrouter\_api\_key) | OpenRouter API key (required when llm\_provider is 'openrouter') | `string` | `""` | no |
 | <a name="input_region"></a> [region](#input\_region) | n/a | `string` | `"us-east-1"` | no |
 | <a name="input_tailnet_dns_name"></a> [tailnet\_dns\_name](#input\_tailnet\_dns\_name) | n/a | `string` | n/a | yes |
 | <a name="input_tailscale_auth_key"></a> [tailscale\_auth\_key](#input\_tailscale\_auth\_key) | n/a | `string` | n/a | yes |
