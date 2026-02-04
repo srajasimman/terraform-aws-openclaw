@@ -139,26 +139,26 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_anthropic_api_key"></a> [anthropic\_api\_key](#input\_anthropic\_api\_key) | Anthropic API key (required when llm\_provider is 'anthropic') | `string` | `""` | no |
-| <a name="input_browser_port"></a> [browser\_port](#input\_browser\_port) | n/a | `number` | `18791` | no |
-| <a name="input_gateway_port"></a> [gateway\_port](#input\_gateway\_port) | n/a | `number` | `18789` | no |
-| <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | n/a | `string` | `"t3.medium"` | no |
+| <a name="input_browser_port"></a> [browser\_port](#input\_browser\_port) | Port for the OpenClaw browser service | `number` | `18791` | no |
+| <a name="input_gateway_port"></a> [gateway\_port](#input\_gateway\_port) | Port for the OpenClaw gateway service | `number` | `18789` | no |
+| <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | EC2 instance type | `string` | `"t3.medium"` | no |
 | <a name="input_llm_provider"></a> [llm\_provider](#input\_llm\_provider) | LLM provider to use with OpenClaw (anthropic, openrouter, openai, or opencode-zen) | `string` | `"anthropic"` | no |
 | <a name="input_openai_api_key"></a> [openai\_api\_key](#input\_openai\_api\_key) | OpenAI API key (required when llm\_provider is 'openai') | `string` | `""` | no |
 | <a name="input_opencode_zen_api_key"></a> [opencode\_zen\_api\_key](#input\_opencode\_zen\_api\_key) | OpenCode Zen API key (required when llm\_provider is 'opencode-zen') | `string` | `""` | no |
 | <a name="input_openrouter_api_key"></a> [openrouter\_api\_key](#input\_openrouter\_api\_key) | OpenRouter API key (required when llm\_provider is 'openrouter') | `string` | `""` | no |
-| <a name="input_region"></a> [region](#input\_region) | n/a | `string` | `"us-east-1"` | no |
-| <a name="input_tailnet_dns_name"></a> [tailnet\_dns\_name](#input\_tailnet\_dns\_name) | n/a | `string` | n/a | yes |
-| <a name="input_tailscale_auth_key"></a> [tailscale\_auth\_key](#input\_tailscale\_auth\_key) | n/a | `string` | n/a | yes |
+| <a name="input_region"></a> [region](#input\_region) | AWS region to deploy resources | `string` | `"us-east-1"` | no |
+| <a name="input_tailnet_dns_name"></a> [tailnet\_dns\_name](#input\_tailnet\_dns\_name) | Tailnet DNS name (e.g., example.ts.net) | `string` | n/a | yes |
+| <a name="input_tailscale_auth_key"></a> [tailscale\_auth\_key](#input\_tailscale\_auth\_key) | Tailscale authentication key (reusable, ephemeral recommended) | `string` | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_gateway_token"></a> [gateway\_token](#output\_gateway\_token) | n/a |
-| <a name="output_public_dns"></a> [public\_dns](#output\_public\_dns) | n/a |
-| <a name="output_public_ip"></a> [public\_ip](#output\_public\_ip) | n/a |
-| <a name="output_ssh_private_key"></a> [ssh\_private\_key](#output\_ssh\_private\_key) | n/a |
-| <a name="output_tailscale_url_with_token"></a> [tailscale\_url\_with\_token](#output\_tailscale\_url\_with\_token) | n/a |
+| <a name="output_gateway_token"></a> [gateway\_token](#output\_gateway\_token) | Authentication token for the OpenClaw gateway |
+| <a name="output_public_dns"></a> [public\_dns](#output\_public\_dns) | Public DNS name of the EC2 instance |
+| <a name="output_public_ip"></a> [public\_ip](#output\_public\_ip) | Public IP address of the EC2 instance |
+| <a name="output_ssh_private_key"></a> [ssh\_private\_key](#output\_ssh\_private\_key) | Private SSH key for accessing the instance |
+| <a name="output_tailscale_url_with_token"></a> [tailscale\_url\_with\_token](#output\_tailscale\_url\_with\_token) | Full URL to access OpenClaw via Tailscale with token included |
 <!-- END_TF_DOCS -->
 
 ## Accessing OpenClaw
