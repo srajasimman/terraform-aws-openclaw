@@ -1,11 +1,13 @@
 variable "region" {
-  type    = string
-  default = "us-east-1"
+  type        = string
+  default     = "us-east-1"
+  description = "AWS region to deploy resources"
 }
 
 variable "instance_type" {
-  type    = string
-  default = "t3.medium"
+  type        = string
+  default     = "t3.medium"
+  description = "EC2 instance type"
 }
 
 variable "llm_provider" {
@@ -48,20 +50,24 @@ variable "opencode_zen_api_key" {
 }
 
 variable "tailscale_auth_key" {
-  type      = string
-  sensitive = true
+  type        = string
+  sensitive   = true
+  description = "Tailscale authentication key (reusable, ephemeral recommended)"
 }
 
 variable "tailnet_dns_name" {
-  type = string
+  type        = string
+  description = "Tailnet DNS name (e.g., example.ts.net)"
 }
 
 variable "gateway_port" {
-  type    = number
-  default = 18789
+  type        = number
+  default     = 18789
+  description = "Port for the OpenClaw gateway service"
 }
 
 variable "browser_port" {
-  type    = number
-  default = 18791
+  type        = number
+  default     = 18791
+  description = "Port for the OpenClaw browser service"
 }
