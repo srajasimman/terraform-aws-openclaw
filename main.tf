@@ -117,10 +117,14 @@ resource "aws_instance" "this" {
   key_name               = aws_key_pair.this.key_name
 
   user_data = templatefile("${path.module}/userdata.sh.tftpl", {
-    anthropic_api_key  = var.anthropic_api_key
-    tailscale_auth_key = var.tailscale_auth_key
-    gateway_port       = var.gateway_port
-    gateway_token      = local.gateway_token
+    llm_provider         = var.llm_provider
+    anthropic_api_key    = var.anthropic_api_key
+    openrouter_api_key   = var.openrouter_api_key
+    openai_api_key       = var.openai_api_key
+    opencode_zen_api_key = var.opencode_zen_api_key
+    tailscale_auth_key   = var.tailscale_auth_key
+    gateway_port         = var.gateway_port
+    gateway_token        = local.gateway_token
   })
 
   user_data_replace_on_change = true

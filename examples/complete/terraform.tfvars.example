@@ -5,9 +5,25 @@
 region        = "us-east-1"
 instance_type = "t3.medium"
 
-# Anthropic API Key
+# LLM Provider Configuration
+# Choose one of: "anthropic", "openrouter", "openai", or "opencode-zen"
+llm_provider = "anthropic"
+
+# Anthropic API Key (required when llm_provider = "anthropic")
 # Get from: https://console.anthropic.com/
 anthropic_api_key = "sk-ant-api03-..."
+
+# OpenRouter API Key (required when llm_provider = "openrouter")
+# Get from: https://openrouter.ai/keys
+# openrouter_api_key = "sk-or-v1-..."
+
+# OpenAI API Key (required when llm_provider = "openai")
+# Get from: https://platform.openai.com/api-keys
+# openai_api_key = "sk-..."
+
+# OpenCode Zen API Key (required when llm_provider = "opencode-zen")
+# Get from your OpenCode Zen account
+# opencode_zen_api_key = "sk-..."
 
 # Tailscale Configuration
 # Generate auth key from: https://login.tailscale.com/admin/settings/keys

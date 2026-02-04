@@ -59,9 +59,26 @@ else
 fi
 
 # Environment variables
+%{ if llm_provider == "anthropic" ~}
 if ! grep -q ANTHROPIC_API_KEY /home/ubuntu/.bashrc; then
   echo 'export ANTHROPIC_API_KEY="${anthropic_api_key}"' >> /home/ubuntu/.bashrc
 fi
+%{ endif ~}
+%{ if llm_provider == "openrouter" ~}
+if ! grep -q OPENROUTER_API_KEY /home/ubuntu/.bashrc; then
+  echo 'export OPENROUTER_API_KEY="${openrouter_api_key}"' >> /home/ubuntu/.bashrc
+fi
+%{ endif ~}
+%{ if llm_provider == "openai" ~}
+if ! grep -q OPENAI_API_KEY /home/ubuntu/.bashrc; then
+  echo 'export OPENAI_API_KEY="${openai_api_key}"' >> /home/ubuntu/.bashrc
+fi
+%{ endif ~}
+%{ if llm_provider == "opencode-zen" ~}
+if ! grep -q OPENCODE_ZEN_API_KEY /home/ubuntu/.bashrc; then
+  echo 'export OPENCODE_ZEN_API_KEY="${opencode_zen_api_key}"' >> /home/ubuntu/.bashrc
+fi
+%{ endif ~}
 
 # Tailscale
 if ! command -v tailscale >/dev/null 2>&1; then
@@ -83,12 +100,24 @@ systemctl start user@1000.service || true
 # OpenClaw onboarding (ONE TIME)
 if [ ! -f "$STATE_DIR/onboarded" ]; then
   log "Running OpenClaw onboarding"
+%{ if llm_provider == "anthropic" ~}
   sudo -H -u ubuntu ANTHROPIC_API_KEY="${anthropic_api_key}" GATEWAY_PORT="${gateway_port}" bash <<'ONBOARD'
+%{ endif ~}
+%{ if llm_provider == "openrouter" ~}
+  sudo -H -u ubuntu OPENROUTER_API_KEY="${openrouter_api_key}" GATEWAY_PORT="${gateway_port}" bash <<'ONBOARD'
+%{ endif ~}
+%{ if llm_provider == "openai" ~}
+  sudo -H -u ubuntu OPENAI_API_KEY="${openai_api_key}" GATEWAY_PORT="${gateway_port}" bash <<'ONBOARD'
+%{ endif ~}
+%{ if llm_provider == "opencode-zen" ~}
+  sudo -H -u ubuntu OPENCODE_ZEN_API_KEY="${opencode_zen_api_key}" GATEWAY_PORT="${gateway_port}" bash <<'ONBOARD'
+%{ endif ~}
 set -e
 export HOME=/home/ubuntu
 export NVM_DIR="$HOME/.nvm"
 . "$NVM_DIR/nvm.sh"
 
+%{ if llm_provider == "anthropic" ~}
 openclaw onboard --non-interactive --accept-risk \
   --mode local \
   --auth-choice apiKey \
@@ -96,6 +125,38 @@ openclaw onboard --non-interactive --accept-risk \
   --gateway-bind loopback \
   --skip-daemon \
   --skip-skills
+%{ endif ~}
+%{ if llm_provider == "openrouter" ~}
+openclaw onboard --non-interactive --accept-risk \
+  --mode local \
+  --auth-choice apiKey \
+  --token-provider openrouter \
+  --token "$OPENROUTER_API_KEY" \
+  --gateway-port "$GATEWAY_PORT" \
+  --gateway-bind loopback \
+  --skip-daemon \
+  --skip-skills
+%{ endif ~}
+%{ if llm_provider == "openai" ~}
+openclaw onboard --non-interactive --accept-risk \
+  --mode local \
+  --auth-choice openai-api-key \
+  --openai-api-key "$OPENAI_API_KEY" \
+  --gateway-port "$GATEWAY_PORT" \
+  --gateway-bind loopback \
+  --skip-daemon \
+  --skip-skills
+%{ endif ~}
+%{ if llm_provider == "opencode-zen" ~}
+openclaw onboard --non-interactive --accept-risk \
+  --mode local \
+  --auth-choice opencode-zen \
+  --opencode-zen-api-key "$OPENCODE_ZEN_API_KEY" \
+  --gateway-port "$GATEWAY_PORT" \
+  --gateway-bind loopback \
+  --skip-daemon \
+  --skip-skills
+%{ endif ~}
 ONBOARD
 
   touch "$STATE_DIR/onboarded"
