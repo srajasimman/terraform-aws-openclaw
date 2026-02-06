@@ -15,15 +15,43 @@ variable "instance_type" {
   }
 }
 
-variable "anthropic_api_key" {
-  description = "Anthropic API key for OpenClaw (get from https://console.anthropic.com/)"
+variable "llm_provider" {
+  description = "LLM provider to use with OpenClaw (anthropic, openrouter, openai, or opencode-zen)"
   type        = string
-  sensitive   = true
+  default     = "anthropic"
 
   validation {
-    condition     = length(var.anthropic_api_key) > 0
-    error_message = "Anthropic API key cannot be empty."
+    condition     = contains(["anthropic", "openrouter", "openai", "opencode-zen"], var.llm_provider)
+    error_message = "llm_provider must be one of: 'anthropic', 'openrouter', 'openai', or 'opencode-zen'"
   }
+}
+
+variable "anthropic_api_key" {
+  description = "Anthropic API key (required when llm_provider is 'anthropic')"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "openrouter_api_key" {
+  description = "OpenRouter API key (required when llm_provider is 'openrouter')"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "openai_api_key" {
+  description = "OpenAI API key (required when llm_provider is 'openai')"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "opencode_zen_api_key" {
+  description = "OpenCode Zen API key (required when llm_provider is 'opencode-zen')"
+  type        = string
+  default     = ""
+  sensitive   = true
 }
 
 variable "tailscale_auth_key" {
